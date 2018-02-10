@@ -1,0 +1,104 @@
+# Load Balancer
+apiVersion: v1
+kind: Service
+metadata:
+  name: dow
+  labels:
+    app: dow
+
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    name: http
+  - port: 443
+    name: https
+
+  selector:
+    service: httpd
+
+---
+# Ruby APP container
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: dow
+
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: dow
+        service: httpd
+
+    spec:
+      volumes:
+      - name: secret-volume
+        secret:
+          secretName: nginxsecret
+
+      containers:
+      - name: dow
+        image: nandi108/dow
+
+        ports:
+        - containerPort: 80
+        - containerPort: 443
+
+        volumeMounts:
+        - mountPath: /etc/nginx/ssl
+          name: secret-volume
+
+        # TODO: run a deep check, i.e. connect to database
+        # doing the health check against the HTTPS port doesn't work, likely due to SSL certificate validation failure
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 30
+          timeoutSeconds: 1
+
+---
+# Expose MySQL server to the app
+# this also sets the service discovery environment variables
+apiVersion: v1
+kind: Service
+metadata:
+  name: dow-mysqld
+  labels:
+    app: dow
+
+spec:
+  type: NodePort
+  ports:
+  - port: 3306
+  selector:
+    service: mysqld
+
+---
+# MySQL DB
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: dow-mysqld
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: dow
+        service: mysqld
+
+    spec:
+      containers:
+      - name: dow-mysqld
+        image: mysql/mysql-server:5.7
+        ports:
+        - containerPort: 3306
+
+        livenessProbe:
+          tcpSocket:
+            port: 3306
+          initialDelaySeconds: 30
+          timeoutSeconds: 1
