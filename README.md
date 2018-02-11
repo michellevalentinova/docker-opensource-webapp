@@ -54,6 +54,11 @@ In order to change the docker prefix (so the docker images can be generated usin
 
 ## Further Improvements
  - Use an external database as Docker IO isn't great
+ - Security
+   - Mediawiki
+   - Kubernetes http://blog.kubernetes.io/2016/08/security-best-practices-kubernetes-deployment.html
+   - Improve MySQL password security
+   - Docker security
  - It's possible to also do SSL offloading on the LB instead of inside nginx on the pod (depending on LB used) and manage SSL certificates on the LB
  - Use a real HTTPS certificate
  - Annual HTTPS certificate renewal
@@ -61,8 +66,5 @@ In order to change the docker prefix (so the docker images can be generated usin
  - Logging
  - Metrics
  - Alerting
- - Kubernetes security http://blog.kubernetes.io/2016/08/security-best-practices-kubernetes-deployment.html
- - Improve MySQL password security
- - Docker security
  - Self-building make_secret container instead of a statically generated one in case make_secret.go changes
  - It would be great to have health checks on the Load balancers, not only on the pods

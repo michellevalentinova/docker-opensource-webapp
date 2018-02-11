@@ -18,7 +18,7 @@ spec:
     service: httpd
 
 ---
-# Ruby APP container
+# App container
 apiVersion: v1
 kind: ReplicationController
 metadata:
@@ -50,7 +50,6 @@ spec:
         - mountPath: /etc/nginx/ssl
           name: secret-volume
 
-        # TODO: run a deep check, i.e. connect to database
         # doing the health check against the HTTPS port doesn't work, likely due to SSL certificate validation failure
         livenessProbe:
           httpGet:
