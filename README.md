@@ -37,7 +37,7 @@
  - ./delete.sh
 
 ### Kubernetes Cluster and Authentication
- - gcloud container clusters delete dow
+ - gcloud container clusters delete dow --zone XXXXXX (same as above)
  - Delete project at https://console.cloud.google.com/kubernetes/
  - Remove gcloud SDK from local computer
  - Remove/cleanup ~/.kube/config
